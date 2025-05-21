@@ -1,22 +1,23 @@
 #!/bin/bash
 
-# Set the Instance ID and path to the .env file
-INSTANCE_ID="i-030da7d31a1dbbffc"
+BACKEND_HOST="$1"
 
-# Retrieve the public IP address of the specified EC2 instance
-ipv4_address=$(aws ec2 describe-instances --instance-ids $INSTANCE_ID --query 'Reservations[0].Instances[0].PublicIpAddress' --output text)
+if [[ -z "$BACKEND_HOST" ]]; then
+    echo "ERROR: No backend host provided."
+    exit 1
+fi
 
-# Path to the .env file
 file_to_find="../frontend/.env.docker"
+expected="VITE_API_PATH=\"http://${BACKEND_HOST}:31100\""
 
-# Check the current VITE_API_PATH in the .env file
-current_url=$(cat $file_to_find)
-
-# Update the .env file if the IP address has changed
-if [[ "$current_url" != "VITE_API_PATH=\"http://${ipv4_address}:31100\"" ]]; then
-    if [ -f $file_to_find ]; then
-        sed -i -e "s|VITE_API_PATH.*|VITE_API_PATH=\"http://${ipv4_address}:31100\"|g" $file_to_find
+if [ -f "$file_to_find" ]; then
+    current_url=$(grep VITE_API_PATH "$file_to_find")
+    if [[ "$current_url" != "$expected" ]]; then
+        sed -i -e "s|VITE_API_PATH.*|$expected|g" "$file_to_find"
+        echo "Updated VITE_API_PATH to $BACKEND_HOST"
     else
-        echo "ERROR: File not found."
+        echo "VITE_API_PATH is already correct."
     fi
+else
+    echo "ERROR: $file_to_find not found."
 fi

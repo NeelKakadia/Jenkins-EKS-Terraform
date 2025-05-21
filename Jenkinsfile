@@ -69,23 +69,28 @@ pipeline {
             }
         }
         
+        parameters {
+            string(name: 'FRONTEND_HOST', defaultValue: '', description: 'Frontend LoadBalancer IP or DNS (no http://)')
+            string(name: 'BACKEND_HOST', defaultValue: '', description: 'Backend LoadBalancer IP or DNS (no http://)')
+        }
+
         stage('Exporting environment variables') {
-            parallel{
-                stage("Backend env setup"){
+            parallel {
+                stage("Backend env setup") {
                     steps {
-                        script{
-                            dir("Automations"){
-                                sh "bash updatebackendnew.sh"
+                        script {
+                            dir("Automations") {
+                                sh "bash updatebackendnew.sh ${params.FRONTEND_HOST}"
                             }
                         }
                     }
                 }
-                
-                stage("Frontend env setup"){
+
+                stage("Frontend env setup") {
                     steps {
-                        script{
-                            dir("Automations"){
-                                sh "bash updatefrontendnew.sh"
+                        script {
+                            dir("Automations") {
+                                sh "bash updatefrontendnew.sh ${params.BACKEND_HOST}"
                             }
                         }
                     }

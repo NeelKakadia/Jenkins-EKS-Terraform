@@ -9,6 +9,8 @@ pipeline {
     parameters {
         string(name: 'FRONTEND_DOCKER_TAG', defaultValue: '', description: 'Setting docker image for latest push')
         string(name: 'BACKEND_DOCKER_TAG', defaultValue: '', description: 'Setting docker image for latest push')
+        string(name: 'FRONTEND_HOST', defaultValue: '', description: 'Frontend LoadBalancer IP or DNS (no http://)')
+        string(name: 'BACKEND_HOST', defaultValue: '', description: 'Backend LoadBalancer IP or DNS (no http://)')
     }
     
     stages {
@@ -69,11 +71,6 @@ pipeline {
             }
         }
         
-        parameters {
-            string(name: 'FRONTEND_HOST', defaultValue: '', description: 'Frontend LoadBalancer IP or DNS (no http://)')
-            string(name: 'BACKEND_HOST', defaultValue: '', description: 'Backend LoadBalancer IP or DNS (no http://)')
-        }
-
         stage('Exporting environment variables') {
             parallel {
                 stage("Backend env setup") {

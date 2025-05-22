@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: neelkakadia/wanderlust-backend-beta:v2.0.7
+          image: neelkakadia/wanderlust-backend-beta:v2.0.8
           ports:
             - containerPort: 8080
 ---
